@@ -4,7 +4,11 @@ A simple menubar app that allows you to control an Apple TV from your desktop
 
 > **Enhanced Fork** with 30+ critical fixes including memory leak repairs, 50x performance improvements, glassmorphic design overhaul, and enhanced accessibility. See [What's New](#whats-new-in-v144-december-2025) below.
 
- ![What this application looks like when running in either light or dark mode](screenshot_new.png)
+<p align="center">
+  <img src="screenshot_darkmode.png" alt="Dark mode interface" width="45%"/>
+  <img src="screenshot_lightmode.png" alt="Light mode interface" width="45%"/>
+</p>
+<p align="center"><em>Dark mode (left) and light mode (right) with glassmorphic design</em></p>
 
 ## Installation
 
