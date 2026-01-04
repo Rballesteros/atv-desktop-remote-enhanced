@@ -30,7 +30,7 @@ function initializeRemote() {
 const path = require('path');
 // Removed: var device = false; // Dead code - never used
 var qPresses = 0;
-// Removed: var playstate = false; // Dead code - never used
+var currentlyPlaying = false; // Track play/pause state for button icon
 var previousKeys = []
 
 const ws_keymap = {
@@ -425,14 +425,9 @@ function showAndFade(text) {
 }
 
 function _updatePlayState() {
-    // Add null check to prevent runtime errors if device is not connected
-    if (!device) {
-        console.log('Update play state: device not connected');
-        return;
-    }
-    // Use Font Awesome icons for play/pause instead of text
-    var icon = (device.playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>')
-    var label = (device.playing ? "Pause" : "Play")
+    // Update play/pause button icon based on current state
+    var icon = (currentlyPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>')
+    var label = (currentlyPlaying ? "Pause" : "Play")
     console.log(`Update play state: ${label}`)
     $(`[data-key="play_pause"] .keyText`).html(icon);
 }
@@ -456,9 +451,10 @@ async function sendCommand(k, shifted) {
             el.removeClass('invert');
         }, 150);
     }
-    if (k == 'Space') {
-        var pptxt = rcmd == "Pause" ? "Play" : "Pause";
-        el.find('.keyText').html(pptxt);
+    // Toggle play state for both keyboard (Space) and button clicks (play_pause)
+    if (k == 'Space' || k == 'play_pause' || rcmd == 'play_pause') {
+        currentlyPlaying = !currentlyPlaying;
+        updatePlayState();
     }
     console.log(`Keydown: ${k}, sending command: ${rcmd} (shifted: ${shifted})`)
     previousKeys.push(rcmd);
@@ -555,6 +551,10 @@ function showKeyMap() {
 
     // Clean up existing state before re-initializing
     cleanupLongPressState();
+
+    // Initialize play state (assume not playing when first connected)
+    currentlyPlaying = false;
+    updatePlayState();
 
     $("[data-key]").off('mousedown mouseup mouseleave');
     
