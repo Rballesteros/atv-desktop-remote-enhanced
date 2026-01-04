@@ -283,6 +283,73 @@ This variable is declared but never used or updated anywhere in the codebase.
 
 ---
 
+## Additional Bugs Found (Deep Code Analysis)
+
+### JavaScript Bugs - ✅ FIXED
+
+#### Bug #11: Undefined `device` Variable (CRITICAL) ✅
+**Location:** `web_remote.js:218, 443`
+**Status:** FIXED
+**Impact:** Would crash with `ReferenceError` when window closes or certain commands sent
+**Fix Applied:**
+- Replaced `device` cleanup with `ws_cleanup()` call
+- Removed dead code checking for function in keymap
+
+#### Bug #12: Infinite Loop in getCreds (HIGH) ✅
+**Location:** `web_remote.js:805`
+**Status:** FIXED
+**Impact:** Could freeze UI if credentials are malformed
+**Fix Applied:** Added max iteration limit (10) and error handling
+
+#### Bug #13: NativeTheme Listener Cleanup (MEDIUM) ✅
+**Location:** `web_remote.js:969`
+**Status:** FIXED
+**Impact:** Could remove unrelated event listeners
+**Fix Applied:** Changed `removeAllListeners()` to `removeListener('updated', themeUpdated)`
+
+#### Bug #14: Type Confusion in sendCommand (MEDIUM) ✅
+**Location:** `web_remote.js:439-442`
+**Status:** FIXED
+**Impact:** Confusing code logic, potential undefined behavior
+**Fix Applied:** Clarified command mapping logic, added validation for unknown commands
+
+#### Bug #15: Race Condition in Pending Messages (HIGH) - Partially Mitigated ✅
+**Location:** `ws_remote.js:37-51`
+**Status:** Partially addressed (max queue size added)
+**Impact:** Message loss or duplication under high load
+**Fix Applied:** Added MAX_PENDING_MESSAGES limit
+**Remaining:** Full atomic queue processing for complete fix
+
+### Python Backend Bugs - 📋 DOCUMENTED
+
+**Status:** Documented in `PYTHON_BUGS.md` for v1.5.0 release
+
+11 bugs found in Python WebSocket server (`build/wsserver.py`):
+- **2 CRITICAL:** Dictionary access without validation, null check missing
+- **3 HIGH:** Bare exception handler, argument parsing error, pairing state validation
+- **6 MEDIUM:** Race conditions, global state issues, missing validation
+
+See `PYTHON_BUGS.md` for detailed descriptions and suggested fixes.
+
+---
+
+## Bug Fix Summary
+
+### Fixed in v1.4.4:
+- ✅ 9/10 original state-related bugs
+- ✅ 4/5 JavaScript bugs from deep analysis
+- ✅ Play/pause button state tracking
+- ✅ WebSocket cleanup on window unload
+- ✅ Infinite loop protection
+- ✅ Event listener cleanup
+
+### Deferred to v1.5.0:
+- 📋 11 Python backend bugs (see PYTHON_BUGS.md)
+- 📋 Full atomic queue processing for pending messages
+- 📋 State machine refactoring
+
+---
+
 ## Suggested State Machine
 
 Instead of multiple boolean flags, consider:
